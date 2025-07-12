@@ -6,15 +6,6 @@ const app = express();
 dotenv.config();
 app.use(express.json());
 
-// Importar rotas
-// const authRoutes = require('./routes/auth.routes');
-
-// app.use('/api/auth', authRoutes);
-
-// Middleware de erro
-// const errorHandler = require('./middlewares/errorMiddleware');
-// app.use(errorHandler);
-
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     app.listen(process.env.PORT, () => {
