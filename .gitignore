@@ -1,8 +1,4 @@
-# Ignorar ambiente e segredos
-.env
-
-# Ignorar node_modules
 node_modules/
-
-# Ignorar pasta que você não quer rastrear
-Sistema-de-agendamento-medico/
+.env
+uploads/
+coverage/
