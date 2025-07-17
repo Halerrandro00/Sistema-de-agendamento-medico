@@ -4,11 +4,11 @@ const connectDB = require('./config/db');
 
 const PORT = process.env.PORT || 3000;
 
-// Conectar ao Banco de Dados
+// Conectar ao banco Mongo
 connectDB();
 
 const server = app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT} em ambiente de ${process.env.NODE_ENV}`);
+  console.log(`🚀 Servidor rodando na porta ${PORT} em ambiente de ${process.env.NODE_ENV}`);
 });
 
-module.exports = server; // Exportar para os testes
+module.exports = server;
