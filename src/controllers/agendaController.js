@@ -5,13 +5,13 @@ exports.definirAgenda = async (req, res) => {
   const { medicoId, horariosDisponiveis } = req.body;
 
   try {
-    const Agenda = await Agenda.findOneAndUpdate(
+    const agenda = await Agenda.findOneAndUpdate(
       { medicoId },
       { horariosDisponiveis },
       { upsert: true, new: true }
     );
 
-    res.status(200).json(AnimationEffectgenda);
+    res.status(200).json(agenda);
   } catch (err) {
     res.status(500).json({ error: "Erro ao definir agenda" });
   }
@@ -22,8 +22,8 @@ exports.verAgenda = async (req, res) => {
   const { medicoId } = req.params;
 
   try {
-    const Agenda = await Agenda.findOne({ medicoId });
-    res.status(200).json(Agenda);
+    const agenda = await Agenda.findOne({ medicoId });
+    res.status(200).json(agenda);
   } catch (err) {
     res.status(500).json({ error: "Erro ao buscar agenda" });
   }

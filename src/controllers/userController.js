@@ -1,8 +1,6 @@
 const User = require('../models/User');
 
 exports.getAllUsers = async (req, res) => {
-  const users = await User.find().select('-password');
-  res.json(users);
   try {
     const users = await User.find().select('-password');
     res.json(users);
@@ -13,7 +11,7 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getDoctors = async (req, res) => {
   try {
-    const doctors = await User.find({ role: 'Doctor' }).select('-password');
+    const doctors = await User.find({ tipo: 'medico' }).select('-password');
     res.json(doctors);
   } catch (error) {
     res.status(500).json({ message: 'Erro ao buscar médicos.', error: error.message });
@@ -21,18 +19,16 @@ exports.getDoctors = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-  const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).select('-password');
-  res.json(user);
   try {
-    const { role: requesterRole } = req.user;
+    const { tipo: requesterTipo } = req.user;
     const userToUpdate = await User.findById(req.params.id);
 
     if (!userToUpdate) {
       return res.status(404).json({ message: 'Usuário não encontrado.' });
     }
 
-    // Apenas um admin pode alterar o 'role' de outro usuário
-    if (req.body.role && req.body.role !== userToUpdate.role && requesterRole !== 'Admin') {
+    // Apenas um admin pode alterar o 'tipo' de outro usuário
+    if (req.body.tipo && req.body.tipo !== userToUpdate.tipo && requesterTipo !== 'Admin') {
       return res.status(403).json({ message: 'Acesso negado. Apenas administradores podem alterar perfis de usuário.' });
     }
 
@@ -40,7 +36,7 @@ exports.updateUser = async (req, res) => {
     delete req.body.password;
 
     const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).select('-password');
-    console.log(`[LOG] Usuário ${updatedUser._id} atualizado pelo admin ${req.user.userId}`);
+    console.log(`[LOG] Usuário ${updatedUser._id} atualizado pelo admin ${req.user.id}`);
     res.json(updatedUser);
   } catch (error) {
     res.status(500).json({ message: 'Erro ao atualizar usuário.', error: error.message });
@@ -48,18 +44,20 @@ exports.updateUser = async (req, res) => {
 };
 
 exports.deleteUser = async (req, res) => {
-  const user = await User.findByIdAndDelete(req.params.id);
-  res.json({ message: 'User deleted' });
   try {
+    // Adiciona uma proteção para impedir que um admin delete a própria conta
+    if (req.params.id === req.user.id) {
+      return res.status(400).json({ message: 'Não é permitido deletar a própria conta.' });
+    }
+
     const userToDelete = await User.findById(req.params.id);
     if (!userToDelete) {
       return res.status(404).json({ message: 'Usuário não encontrado.' });
     }
     await User.findByIdAndDelete(req.params.id);
-    console.log(`[LOG] Usuário ${req.params.id} deletado pelo admin ${req.user.userId}`);
+    console.log(`[LOG] Usuário ${req.params.id} deletado pelo admin ${req.user.id}`);
     res.json({ message: 'Usuário deletado com sucesso.' });
   } catch (error) {
     res.status(500).json({ message: 'Erro ao deletar usuário.', error: error.message });
   }
 };
-

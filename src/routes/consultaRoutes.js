@@ -3,8 +3,6 @@ const router = express.Router();
 const consultaController = require("../controllers/consultaController");
 const autenticar = require("../middlewares/authMiddleware");
 
-console.log("cancelarConsulta é função?", typeof consultaController.cancelarConsulta);
-
 router.post("/", autenticar, consultaController.AgendarConsulta);
 
 router.put("/cancelar/:id", autenticar, consultaController.cancelarConsulta);

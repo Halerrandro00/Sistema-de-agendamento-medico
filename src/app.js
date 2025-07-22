@@ -2,7 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
 const path = require('path');
-const apiRoutes = require('./api/routes/routes');
+const dotenv = require('dotenv');
+// Carrega as variáveis de ambiente do arquivo .env ANTES de qualquer outro código
+dotenv.config();
+const mainRoutes = require('./routes'); // Importa o roteador principal
 
 const app = express();
 
@@ -19,7 +22,7 @@ app.use(passport.initialize());
 require('./config/passport')(passport);
 
 // Rotas da API
-app.use('/api', apiRoutes);
+app.use('/api', mainRoutes);
 
 // Rota padrão para a raiz "/"
 app.get('/', (req, res) => {

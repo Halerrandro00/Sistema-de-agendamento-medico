@@ -1,5 +1,5 @@
-const Appointment = require('../models/Appointment');
-const Availability = require('../models/Availability');
+const Appointment = require('../models/Consulta'); // Corrigido: O modelo para agendamentos é 'Consulta'
+const Availability = require('../models/Agenda');   // Corrigido: O modelo para disponibilidade é 'Agenda'
 
 exports.createAppointment = async (req, res) => {
   const { doctor, date } = req.body;

@@ -1,12 +1,9 @@
+const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const authMiddleware = require('../middleware/authMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
+const roleMiddleware = require('../middlewares/roleMiddleware');
 
-// Admin routes
-router.get('/', authMiddleware, userController.getAllUsers);
-router.put('/:id', authMiddleware, userController.updateUser);
-router.delete('/:id', authMiddleware, userController.deleteUser);
 // Rota pública para pacientes listarem os médicos disponíveis
 router.get('/doctors', authMiddleware, userController.getDoctors);
 
@@ -16,4 +13,3 @@ router.put('/:id', authMiddleware, roleMiddleware(['Admin']), userController.upd
 router.delete('/:id', authMiddleware, roleMiddleware(['Admin']), userController.deleteUser);
 
 module.exports = router;
-

@@ -2,6 +2,11 @@ const express = require("express");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
+const authController = require('../controllers/authController'); // Supondo que este controller exista
+
+// Rotas de autenticação local (email/senha) que estavam faltando
+router.post('/register', authController.register);
+router.post('/login', authController.login);
 
 router.get("/google", passport.authenticate("google", {
   scope: ["profile", "email"]
