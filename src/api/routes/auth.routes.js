@@ -2,7 +2,8 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 
-const authenticateJWT = require('../middlewares/authenticateJWT');
+const authenticateJWT = require('../../middlewares/authenticateJWT');
+
 const {
   registerUser,
   loginUser,

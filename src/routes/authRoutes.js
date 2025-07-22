@@ -14,8 +14,9 @@ router.get("/google/callback", passport.authenticate("google", { session: false 
     { expiresIn: "1d" }
   );
 
-  // Aqui você pode redirecionar para o frontend com o token na URL
-  res.redirect(`http://localhost:5173/login/success?token=${token}`);
+  //redirecionar para o frontend com o token na URL
+  res.redirect(`http://localhost:3000/login/success?token=${token}`);
+
 });
 
 module.exports = router;
