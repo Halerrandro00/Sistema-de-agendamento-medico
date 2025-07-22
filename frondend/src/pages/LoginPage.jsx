@@ -1,65 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/api';
+import { AuthContext } from '../context/AuthContext';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
-      const response = await api.post('/auth/login', { email, senha });
-      const { token, role } = response.data;
+      const { data } = await api.post('/auth/login', { email, password });
+      const userRole = await login(data.token);
 
-      localStorage.setItem('authToken', token);
-
-      // Redireciona baseado no perfil do usuário
-      if (role === 'PACIENTE') {
-        navigate('/paciente/dashboard');
-      } else if (role === 'MEDICO') {
-        navigate('/medico/dashboard');
-      } else if (role === 'ADMIN') {
-        navigate('/admin/dashboard');
-      } else {
-        setError('Perfil de usuário desconhecido.');
+      // Redireciona baseado na role
+      switch (userRole) {
+        case 'admin':
+          navigate('/admin/dashboard');
+          break;
+        case 'medico':
+          navigate('/medico/dashboard');
+          break;
+        case 'paciente':
+          navigate('/paciente/dashboard');
+          break;
+        default:
+          setError('Perfil desconhecido');
+          logout();
       }
-
     } catch (err) {
-      if (err.response && err.response.status === 401) {
-        setError('Email ou senha inválidos.');
-      } else {
-        setError('Erro ao tentar logar. Tente novamente mais tarde.');
-      }
+      setError('Falha no login. Verifique suas credenciais.');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div>
       <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          required
-        />
-        <input
-          type="password"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-          placeholder="Senha"
-          required
-        />
-        <button type="submit">Entrar</button>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Senha:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <button type="submit" disabled={loading}>
+          {loading ? 'Entrando...' : 'Entrar'}
+        </button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 }
 
 export default LoginPage;
-

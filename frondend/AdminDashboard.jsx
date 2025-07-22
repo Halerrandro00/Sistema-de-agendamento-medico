@@ -1,55 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../api/api';
+import DoctorList from '../components/DoctorList';
 
 function AdminDashboard() {
-  const [formData, setFormData] = useState({
-    nome: '',
-    email: '',
-    senha: '',
-    crm: '',
-    especialidade: '',
-  });
-  const [message, setMessage] = useState('');
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage('');
-    try {
-      await api.post('/admin/medicos', formData);
-      setMessage('Médico cadastrado com sucesso!');
-      // Limpa o formulário
-      setFormData({ nome: '', email: '', senha: '', crm: '', especialidade: '' });
-    } catch (error) {
-      if (error.response && error.response.data) {
-        setMessage(`Erro: ${error.response.data.message || 'Não foi possível cadastrar o médico.'}`);
-      } else {
-        setMessage('Erro de conexão ao tentar cadastrar o médico.');
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        // Assumindo que sua API tem uma rota GET /api/users/doctors para buscar médicos
+        // ou uma rota /api/users que retorna todos e você filtra pelo tipo 'medico'.
+        // Vamos usar a segunda abordagem como exemplo.
+        const { data } = await api.get('/users');
+        const doctorUsers = data.filter(user => user.tipo === 'medico');
+        setDoctors(doctorUsers);
+      } catch (err) {
+        setError('Falha ao buscar a lista de médicos.');
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-      console.error("Erro ao cadastrar médico:", error);
-    }
-  };
+    };
+
+    fetchDoctors();
+  }, []); // O array vazio garante que o useEffect rode apenas uma vez, quando o componente montar.
 
   return (
     <div>
-      <h2>Painel do Administrador</h2>
-      <h3>Cadastrar Novo Médico</h3>
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="nome" value={formData.nome} onChange={handleChange} placeholder="Nome completo" required />
-        <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
-        <input type="password" name="senha" value={formData.senha} onChange={handleChange} placeholder="Senha" required />
-        <input type="text" name="crm" value={formData.crm} onChange={handleChange} placeholder="CRM" required />
-        <input type="text" name="especialidade" value={formData.especialidade} onChange={handleChange} placeholder="Especialidade" required />
-        <button type="submit">Cadastrar Médico</button>
-      </form>
-      {message && <p>{message}</p>}
-
-      {/* Aqui você poderia adicionar uma lista de usuários (médicos e pacientes) */}
+      <h1>Dashboard do Administrador</h1>
+      <h2>Gerenciamento de Médicos</h2>
+      {loading && <p>Carregando médicos...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {!loading && !error && <DoctorList doctors={doctors} />}
     </div>
   );
 }
 
 export default AdminDashboard;
+

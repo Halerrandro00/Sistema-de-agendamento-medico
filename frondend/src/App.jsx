@@ -1,34 +1,40 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-
 import LoginPage from './pages/LoginPage';
-import PacienteDashboard from './pages/PacienteDashboard';
-import MedicoDashboard from './pages/MedicoDashboard';
 import AdminDashboard from './pages/AdminDashboard';
-
+import MedicoDashboard from './pages/MedicoDashboard';
+import PacienteDashboard from './pages/PacienteDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
-import Layout from './components/Layout';
+import DashboardLayout from './components/DashboardLayout';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Rota pública */}
-        <Route path="/login" element={<LoginPage />} />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
 
-        {/* Rotas protegidas, agrupadas dentro do Layout */}
-        <Route element={<Layout />}>
-          <Route element={<ProtectedRoute />}>
-            <Route path="/paciente/dashboard" element={<PacienteDashboard />} />
-            <Route path="/medico/dashboard" element={<MedicoDashboard />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          {/* Agrupando rotas protegidas sob um layout comum */}
+          <Route element={<DashboardLayout />}>
+            <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            </Route>
+            
+            <Route element={<ProtectedRoute allowedRoles={['medico']} />}>
+              <Route path="/medico/dashboard" element={<MedicoDashboard />} />
+            </Route>
+            
+            <Route element={<ProtectedRoute allowedRoles={['paciente']} />}>
+              <Route path="/paciente/dashboard" element={<PacienteDashboard />} />
+            </Route>
           </Route>
-        </Route>
-
-        {/* Rota para redirecionar caminhos desconhecidos */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </Router>
+          
+          {/* Redireciona para o login se nenhuma rota corresponder */}
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

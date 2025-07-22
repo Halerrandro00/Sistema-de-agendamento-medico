@@ -3,78 +3,68 @@ const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const User = require('../models/user.model');
 
-// @desc    Registrar um novo usuário
-// @route   POST /api/auth/register
-const registerUser = async (req, res) => {
+exports.registerUser = async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   const { name, email, password, role } = req.body;
 
   try {
     let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ message: 'Usuário já existe' });
-    }
+    if (user) return res.status(400).json({ message: 'Usuário já existe' });
 
-    user = new User({ name, email, password, role });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user = new User({ name, email, password: hashedPassword, role });
     await user.save();
 
-    // Gerar token
     const payload = { id: user.id, role: user.role };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    res.status(201).json({ token });
+    res.status(201).json({ token, role: user.role });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Erro no servidor');
   }
 };
 
-// @desc    Autenticar usuário e obter token
-// @route   POST /api/auth/login
-const loginUser = async (req, res) => {
+exports.loginUser = async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   const { email, password } = req.body;
 
   try {
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Credenciais inválidas' });
-    }
+    if (!user) return res.status(400).json({ message: 'Credenciais inválidas' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Credenciais inválidas' });
-    }
+    if (!isMatch) return res.status(400).json({ message: 'Credenciais inválidas' });
 
     const payload = { id: user.id, role: user.role };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    res.json({ token });
+    res.json({ token, role: user.role });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Erro no servidor');
   }
 };
 
-// @desc    Callback do Google OAuth
-const googleCallback = (req, res) => {
-  const payload = { id: req.user.id, role: req.user.role };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-  // Aqui você pode redirecionar para o seu frontend com o token
-  // res.redirect(`http://seu-frontend.com/dashboard?token=${token}`);
-  res.json({ token });
+exports.getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) return res.status(404).json({ message: 'Usuário não encontrado' });
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Erro ao buscar perfil' });
+  }
 };
 
-module.exports = {
-  registerUser,
-  loginUser,
-  googleCallback,
+exports.googleCallback = (req, res) => {
+  const payload = { id: req.user.id, role: req.user.role };
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+  // Redireciona para seu frontend com token no query string
+  res.redirect(`${process.env.FRONTEND_URL}/login?token=${token}`);
 };

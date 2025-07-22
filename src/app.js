@@ -21,4 +21,10 @@ require('./config/passport')(passport);
 // Rotas da API
 app.use('/api', apiRoutes);
 
+// Rota padrão para a raiz "/"
+app.get('/', (req, res) => {
+  res.send('Bem-vindo à API do Sistema de Agendamento Médico!');
+});
+
+
 module.exports = app;
