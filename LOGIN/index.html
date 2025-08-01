@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'> 
+    <link rel="stylesheet" href="styles.css">
+
+    <title>Agendamento Login</title>
+</head>
+<body>
+    <main class="container">
+        <form id="login-form">
+            <h1>Login</h1>
+<div class="input-box">
+    <input placeholder="Usuário" type="text" id="usuario" required>
+    <i class="bx bx-user"></i>
+</div>
+<div class="input-box">
+    <input placeholder="Senha" type="password" id="senha" required>
+    <i class="bx bx-lock-alt"></i>
+</div>
+
+<div class="remember-forgot">
+    <label>
+           <input type="checkbox">
+           Lembrar minha Senha
+    </label>
+    <a href="#">Esqueci minha senha</a>
+</div>
+
+
+<button type="submit">Login</button>
+
+<div id="error-message" style="color: #ff6b6b; text-align: center; margin-top: 15px;"></div>
+
+<div class="register-link">
+    <p>Não tem uma conta? <a href="../CADASTRO/index.html">Cadastre-se</a></p>
+</div>
+        </form>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

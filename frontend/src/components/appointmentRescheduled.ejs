@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .header { background-color: #ff9800; color: white; padding: 10px; text-align: center; border-radius: 5px 5px 0 0; }
+        .content { padding: 20px; }
+        .details-box { border: 1px solid #eee; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .footer { margin-top: 20px; font-size: 0.9em; text-align: center; color: #777; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Consulta Remarcada</h1>
+        </div>
+        <div class="content">
+            <p>Olá, <strong><%= userName %></strong>,</p>
+            <p>A consulta com Dr(a). <strong><%= doctorName %></strong> foi remarcada com sucesso. Verifique os novos detalhes abaixo:</p>
+            
+            <div class="details-box">
+                <p><strong>Novos Detalhes da Consulta:</strong></p>
+                <ul>
+                    <li><strong>Data:</strong> <%= newAppointmentDate %></li>
+                    <li><strong>Horário:</strong> <%= newTime %></li>
+                </ul>
+            </div>
+
+            <p>Se você não solicitou esta alteração, por favor, entre em contato conosco imediatamente.</p>
+        </div>
+        <div class="footer">
+            <p>Clínica Médica | Cuidando da sua saúde.</p>
+        </div>
+    </div>
+</body>
+</html>
+
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem('authToken');
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+export default ProtectedRoute;
+

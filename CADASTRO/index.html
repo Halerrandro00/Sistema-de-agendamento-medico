@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+    <title>Cadastro de Usuário</title>
+</head>
+<body>
+    <main class="container">
+        <form id="register-form">
+            <h1>Cadastro</h1>
+            <div class="input-box">
+                <input placeholder="Nome Completo" type="text" id="nome" required>
+                <i class='bx bx-user'></i>
+            </div>
+            <div class="input-box">
+                <input placeholder="Usuário (ou E-mail)" type="text" id="usuario" required>
+                <i class='bx bx-envelope'></i>
+            </div>
+            <div class="input-box">
+                <input placeholder="Senha" type="password" id="senha" required>
+                <i class='bx bx-lock-alt'></i>
+            </div>
+            <div class="input-box">
+                <input placeholder="Confirmar Senha" type="password" id="confirmar-senha" required>
+                <i class='bx bx-lock-alt'></i>
+            </div>
+
+            <button type="submit">Cadastrar</button>
+
+            <div id="error-message" style="color: #ff6b6b; text-align: center; margin-top: 15px;"></div>
+
+            <div class="register-link">
+                <p>Já tem uma conta? <a href="../LOGIN/index.html">Faça o login</a></p>
+            </div>
+        </form>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
+
